@@ -1,9 +1,6 @@
 name: Build
 
-on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+on: push
 
 jobs:
   build_wheels:
@@ -11,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-13, macos-latest, windows-latest]
+        os: [windows-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -37,19 +34,3 @@ jobs:
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: wheelhouse/*.whl
-
-  upload_pypi:
-    needs: build_wheels
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          # unpacks all CIBW artifacts into dist/
-          pattern: cibw-*
-          path: dist
-          merge-multiple: true
-
-      - uses: pypa/gh-action-pypi-publish@release/v1
